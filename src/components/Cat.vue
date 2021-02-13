@@ -2,7 +2,7 @@
   <v-list>
     <v-list-item-group>
       <v-list-item
-        v-for="(item, i) in categories"
+        v-for="(item, i) in todosFiltered"
         :key="i" 
         @click="selectCat(i)"
         :class="{ active: activeCat === i }"
@@ -33,22 +33,23 @@
         }
       }
     },
+  computed: {
+    todosFiltered() {
+      return this.$store.getters.categoriesFiltered
+    },
+  },
     mounted() {
+      this.$store.dispatch('getCategories');
       if(localStorage.getItem('activeCat')) {
         this.activeCat = JSON.parse(`${localStorage.getItem('activeCat')}`);
         this.$emit('toggleCat', this.activeCat);
       }
-      this.getCategory() 
     },
     methods: {
-      getCategory() {
-        if(localStorage.getItem('category')) {
-          this.categories = JSON.parse(`${localStorage.getItem('category')}`);
-        }
-      },
       saveCats() {
-        const parsed = JSON.stringify(this.categories);
-        localStorage.setItem('category', parsed);
+        this.$store.dispatch('savetCategories', {
+          categories: this.categories
+        })
       },
       deleteCat(i: number) {
        this.categories.splice(i,1);

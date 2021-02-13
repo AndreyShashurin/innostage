@@ -112,7 +112,8 @@ export default Vue.extend({
       type: ""
     }
   },
-  created() {
+  mounted() {
+    this.$store.dispatch('getTovars');
     this.getTovar();
   },
   methods: {
@@ -153,8 +154,9 @@ export default Vue.extend({
       this.saveTovar()
     },
     saveTovar() {
-      const parsed = JSON.stringify(this.tovars);
-      localStorage.setItem('tovars', parsed);
+      this.$store.dispatch('saveTovars', {
+        tovars: this.tovars
+      })
     },
     addCat() {
       if(!this.category) return;
@@ -165,9 +167,7 @@ export default Vue.extend({
       this.dialog = !this.dialog;
     },
     getTovar() {
-      if(localStorage.getItem('tovars')) {
-        this.tovars = JSON.parse(`${localStorage.getItem('tovars')}`);
-      }
+      this.tovars = this.$store.getters.tovarsFiltered;
     },
     checkMove(e: any) {
       this.saveTovar()
@@ -182,11 +182,11 @@ export default Vue.extend({
   computed: {
     filteredResources(): any{
       if(this.search){
-        return this.tovars.filter(el => {
+        return this.$store.getters.tovarsFiltered.filter(el => {
           return el.name.toLowerCase().includes(this.search.toLowerCase());
         })
       } else{
-        return this.tovars;
+        return this.$store.getters.tovarsFiltered;
       }
     }
   }

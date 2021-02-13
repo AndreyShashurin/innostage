@@ -1,4 +1,4 @@
-# bike
+# innostage
 
 ## Project setup
 ```
