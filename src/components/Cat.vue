@@ -47,13 +47,13 @@
     },
     methods: {
       saveCats() {
-        this.$store.dispatch('savetCategories', {
+        this.$store.dispatch('saveCategories', {
           categories: this.categories
         })
       },
       deleteCat(i: number) {
-       this.categories.splice(i,1);
-        this.saveCats();
+       //this.categories.splice(i,1);
+        //this.saveCats();
         this.$emit('deleteCat', i);
       },
       selectCat(i: number) {

@@ -70,7 +70,7 @@
             </div>
             </draggable>
             <div> 
-              <v-container class="v-container">
+              <v-container class="newTovar v-container">
                 <v-col md="3"><v-text-field v-model="name"></v-text-field></v-col>
                 <v-col md="3"><v-text-field v-model="count"></v-text-field></v-col>
                 <v-col md="3"><v-text-field v-model="type"></v-text-field></v-col>
@@ -122,17 +122,12 @@ export default Vue.extend({
     },
     addTovar(i?: any) {
       if(this.isUpdate) {
-        this.tovars[i].name = this.name;
-        this.tovars[i].count = this.count;
-        this.tovars[i].type = this.type;
+        const data = [this.name, this.count, this.type, i]
+        this.$store.commit('updateTovars', data)
         this.isUpdate = false;
       } else {
-        this.tovars.push({
-          "name": this.name,
-          "count": this.count,
-          "type": this.type,
-          "category": this.activeCat
-        })
+        const data = [this.name, this.count, this.type, this.activeCat]
+        this.$store.commit('saveTovars', data)
       }
       this.saveTovar();
       this.clear();
@@ -150,7 +145,7 @@ export default Vue.extend({
       this.selectedTovar = i;
     },
     deleteTovar(i: number){
-      this.tovars.splice(i,1);
+      this.$store.commit('deleteTovar', i)
       this.saveTovar()
     },
     saveTovar() {
@@ -173,9 +168,10 @@ export default Vue.extend({
       this.saveTovar()
     },
     deleteCat(i: number) {
-      this.tovars = this.tovars.filter(el => {
+      this.$store.commit('deleteCat', i)
+      /*this.tovars = this.tovars.filter(el => {
         return el.category !== i
-      })
+      })*/
       this.saveTovar()
     }
   },
@@ -196,7 +192,11 @@ export default Vue.extend({
 .v-container {
   display:flex;
   padding: 0px 10px;
+  cursor: pointer;
   align-items: center
+}
+.v-container:not(.newTovar):hover {
+  background: #f3f1f1;
 }
 .border {
   border-bottom: solid 1px #efe8e8;

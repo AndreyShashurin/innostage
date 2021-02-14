@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    tovars: [],
+    tovars: new Array<any>(),
     categories: []
   },
   getters: {
@@ -22,6 +22,27 @@ export default new Vuex.Store({
     },
     setTovars: (state, data) => {
       state.tovars = data
+    },
+    updateTovars(state, tovar) {
+      const i = tovar[3];
+      state.tovars[i].name = tovar[0];
+      state.tovars[i].count = tovar[1];
+      state.tovars[i].type = tovar[2];
+    },
+    saveTovars(state, tovar) {
+      state.tovars.push({
+        "name": tovar[0],
+        "count": tovar[1],
+        "type": tovar[2],
+        "category": tovar[3]
+      })
+    },
+    deleteTovar: (state, i) => {
+      state.tovars.splice(i,1);
+    },
+    deleteCat: (state, i) => {
+      state.tovars = state.tovars.filter(el => el.category !== i)
+      state.categories.splice(i,1);
     }
   },
   actions: {
@@ -41,7 +62,6 @@ export default new Vuex.Store({
     },
     getTovars({commit}) {
       const data = JSON.parse(`${localStorage.getItem('tovars')}`);
-      localStorage.setItem('getTovars', data);
       commit('setTovars', data)
     },
     getActiveCat({commit}) {
