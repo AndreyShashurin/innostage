@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { Tovar, Categories } from '@/types'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    tovars: new Array<any>(),
-    categories: []
+    tovars: [] as Tovar[],
+    categories: [] as Categories[]
   },
   getters: {
     categoriesFiltered(state) {
@@ -17,10 +18,15 @@ export default new Vuex.Store({
     },
  },
   mutations: {
-    setCat: (state, data) => {
+    setCat(state, data) {
       state.categories = data
     },
-    setTovars: (state, data) => {
+    pushCategory(state, data) {
+      state.categories.push({
+        "name": data,
+      })
+    },
+    setTovars(state, data) {
       state.tovars = data
     },
     updateTovars(state, tovar) {
@@ -29,18 +35,18 @@ export default new Vuex.Store({
       state.tovars[i].count = tovar[1];
       state.tovars[i].type = tovar[2];
     },
-    saveTovars(state, tovar) {
+    pushTovar(state, data) {
       state.tovars.push({
-        "name": tovar[0],
-        "count": tovar[1],
-        "type": tovar[2],
-        "category": tovar[3]
+        "name": data[0],
+        "count": data[1],
+        "type": data[2],
+        "category": data[3]
       })
     },
-    deleteTovar: (state, i) => {
+    deleteTovar(state, i) {
       state.tovars.splice(i,1);
     },
-    deleteCat: (state, i) => {
+    deleteCat(state, i) {
       state.tovars = state.tovars.filter(el => el.category !== i)
       state.categories.splice(i,1);
     }
@@ -50,15 +56,13 @@ export default new Vuex.Store({
       const data = JSON.parse(`${localStorage.getItem('category')}`);
       commit('setCat', data)
     },  
-    saveCategories({commit}, payload) {
-      const parsed = JSON.stringify(payload.categories);
+    saveCategories({state}) {
+      const parsed = JSON.stringify(state.categories);
       localStorage.setItem('category', parsed);
-      commit('setCat', payload.categories );
     },  
-    saveTovars({commit}, payload) {
-      const parsed = JSON.stringify(payload.tovars);
+    saveTovar({state}, ) {
+      const parsed = JSON.stringify(state.tovars);
       localStorage.setItem('tovars', parsed);
-      commit('setTovars', payload.tovars)
     },
     getTovars({commit}) {
       const data = JSON.parse(`${localStorage.getItem('tovars')}`);

@@ -16,53 +16,57 @@
 </template>
 
 <script lang="ts">
-  import Vue from 'vue'
-
-  export default Vue.extend({
-    name: 'Cat',
-    props: ['category'],
-    data: () => ({
-      categories: new Array<any>(),
+import Vue from 'vue'
+import { Categories } from '@/types'
+import { mapGetters } from 'vuex';
+export default Vue.extend({
+  name: 'Cat',
+  props: ['category'],
+  data() {
+    return {
       activeCat: 0,
-    }),
-    watch: { 
-      category(newVal: string) {
-        if(newVal) {
-          this.categories.push({"name":this.category});
-          this.saveCats();
-        }
-      }
-    },
-  computed: {
-    todosFiltered() {
-      return this.$store.getters.categoriesFiltered
-    },
+    }
   },
-    mounted() {
-      this.$store.dispatch('getCategories');
-      if(localStorage.getItem('activeCat')) {
-        this.activeCat = JSON.parse(`${localStorage.getItem('activeCat')}`);
-        this.$emit('toggleCat', this.activeCat);
-      }
-    },
-    methods: {
-      saveCats() {
-        this.$store.dispatch('saveCategories', {
-          categories: this.categories
-        })
-      },
-      deleteCat(i: number) {
-       //this.categories.splice(i,1);
-        //this.saveCats();
-        this.$emit('deleteCat', i);
-      },
-      selectCat(i: number) {
-        this.activeCat = i;
-        this.$emit('toggleCat', i);
-        localStorage.setItem('activeCat', JSON.stringify(i));
+  watch: { 
+    category(newVal: string): void {
+      if(newVal) {
+        this.$store.commit('pushCategory', newVal);
+        this.saveCats();
       }
     }
-  })
+  },
+  computed: {
+    ...mapGetters({
+      categories: 'categoriesFiltered'
+    }),
+    todosFiltered(): Categories {
+      return this.categories;
+    }
+  },
+  mounted() {
+    if(localStorage.getItem('category')) {
+      this.$store.dispatch('getCategories');
+    }
+    if(localStorage.getItem('activeCat')) {
+      this.activeCat = JSON.parse(`${localStorage.getItem('activeCat')}`);
+      this.$emit('toggleCat', this.activeCat);
+    }
+  },
+  methods: {
+    saveCats(): void {
+      this.$store.dispatch('saveCategories');
+    },
+    deleteCat(i: number): void {
+      this.$emit('deleteCat', i);
+      this.saveCats()
+    },
+    selectCat(i: number): void{
+      this.activeCat = i;
+      this.$emit('toggleCat', i);
+      localStorage.setItem('activeCat', JSON.stringify(i));
+    }
+  }
+})
 </script>
 <style scoped>
 .active {
